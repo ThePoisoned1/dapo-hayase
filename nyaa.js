@@ -20,17 +20,23 @@ export default new class NyaaSource extends AbstractSource {
   /** @type {import('./index.d.ts').SearchFunction} */
   async single(query, options) {
     try {
-      let searchTerm = query.titles[0];
-
-      if (query.episode) {
-        const ep = query.episode.toString().padStart(2, '0');
-        searchTerm += ` ${ep}`;
-      }
-      if (query.resolution) {
-        searchTerm += ` ${query.resolution}p`;
-      }
+      let searchTerm;
+      let results = []
       console.log(query)
-      return await this.searchRSS(searchTerm, query, options);
+      for (let i = 0; i < Math.min(query.titles.length,2); i++) {
+        searchTerm = query.titles[i]
+        if (query.episode) {
+          const ep = query.episode.toString().padStart(2, '0');
+          searchTerm += ` ${ep}`;
+        }
+        if (query.resolution) {
+          searchTerm += ` ${query.resolution}p`;
+        }
+        console.log(searchTerm)
+        results = results.concat(await this.searchRSS(searchTerm, query, options));
+      }
+      results = this.removeDuplicates(results)
+      results = this.sortResultsByGroup(results)
     } catch (e) {
       throw new Error(`Nyaa single search failed: ${e.message}`);
     }
@@ -48,7 +54,8 @@ export default new class NyaaSource extends AbstractSource {
   /** @type {import('./index.d.ts').SearchFunction} */
   async movie(query, options) {
     try {
-      return await this.searchRSS(query.titles[0], query, options);
+      var results = await this.searchRSS(query.titles[0], query, options);
+      return this.sortResultsByGroup(results)
     } catch (e) {
       throw new Error(`Nyaa movie search failed: ${e.message}`);
     }
@@ -87,7 +94,7 @@ export default new class NyaaSource extends AbstractSource {
 
     const text = await response.text();
     const results = this.parseXml(text, queryObj.exclusions || []);
-    return this.sortResultsByGroup(results);
+    return results;
   }
 
   parseXml(text, exclusions) {
@@ -166,5 +173,15 @@ export default new class NyaaSource extends AbstractSource {
       if (rankA !== rankB) return rankA - rankB;
       return b.seeders - a.seeders;
     });
+  }
+
+  removeDuplicates(results){
+    var out = []
+    results.forEach(r=>{
+        if(out.some(r.hash))
+          return;
+        out.push(r)
+    })
+    return out;
   }
 }();
