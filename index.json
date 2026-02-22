@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Nyaa (nyaa.si)",
+    "version": "0.1.0",
+    "description": "Source for Nyaa.si",
+    "id": "nyaa-si-dapo",
+    "type": "torrent",
+    "accuracy": "medium",
+    "ratio": 0,
+    "media": "sub",
+    "languages": [
+      "US"
+    ],
+    "url":"aHR0cHM6Ly9ueWFhLnNp",
+    "icon": "https://nyaa.si/static/favicon.png",
+    "update": "",
+    "code": "",
+    "options": {
+    }
+  }
+]
