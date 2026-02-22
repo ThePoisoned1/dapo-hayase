@@ -23,10 +23,13 @@ export default new class NyaaSource extends AbstractSource {
       let results = []
       console.log(query)
       for (let i = 0; i < Math.min(query.titles.length, 2); i++) {
-        this.getQueriesPerTitle(query, query.titles[i]).forEach(async srch=>{
+        const titles = this.getQueriesPerTitle(query, query.titles[i])
+        console.log(titles)
+        for (let j = 0; j < titles.length; j++) {
+          const srch = array[j];
           console.log(srch)
-          results = results.concat(await this.searchRSS(srch, query, options));
-        })
+          results = results.concat(await this.searchRSS(srch, query, options)); 
+        }
       }
       results = this.removeDuplicates(results)
       results = this.sortResultsByGroup(results)
