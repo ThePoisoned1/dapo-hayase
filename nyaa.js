@@ -196,7 +196,9 @@ export default new class NyaaSource extends AbstractSource {
     }
     const formattedSeason = String(season).padStart(2, '0');
     const formattedEp = String(ep).padStart(2, '0');
-    return `S${formattedSeason}E${formattedEp}`;
+    if(season>1)
+      series = words.slice(0,words.length-1).join(" ")
+    return `${series} S${formattedSeason}E${formattedEp}`;
   }
   getQueriesPerTitle(query, title) {
     if (!query.episode)
@@ -211,7 +213,7 @@ export default new class NyaaSource extends AbstractSource {
       aux += res
     }
     queries.push(aux)
-    queries.push(this.getSeasonFormatedEp(title, query.episode))
+    queries.push(this.getSeasonFormatedEp(title, query.episode)+res)
     if (query.absoluteEpisodeNumber && query.absoluteEpisodeNumber > query.episode)
       queries.push(title + ` ${query.absoluteEpisodeNumber.toString().padStart(2, '0')}` + res)
     console.log(queries)
