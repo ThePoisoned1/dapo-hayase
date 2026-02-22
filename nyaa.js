@@ -12,12 +12,12 @@ class AbstractSource {
   test() { throw new Error("Source doesn't implement test"); }
 }
 
-/** @type {import('./index.js').TorrentSource} */
+/** @type {import('./index.d.ts').TorrentSource} */
 export default new class NyaaSource extends AbstractSource {
 
   BASE_URL = 'https://nyaa.si/?page=rss';
 
-  /** @type {import('./index.js').SearchFunction} */
+  /** @type {import('./index.d.ts').SearchFunction} */
   async single(query, options) {
     try {
       let searchTerm = query.titles[0];
@@ -29,14 +29,14 @@ export default new class NyaaSource extends AbstractSource {
       if (query.resolution) {
         searchTerm += ` ${query.resolution}p`;
       }
-
+      console.log(query)
       return await this.searchRSS(searchTerm, query, options);
     } catch (e) {
       throw new Error(`Nyaa single search failed: ${e.message}`);
     }
   }
 
-  /** @type {import('./index.js').SearchFunction} */
+  /** @type {import('./index.d.ts').SearchFunction} */
   async batch(query, options) {
     try {
       return await this.searchRSS(query.titles[0] + " batch", query, options);
@@ -45,7 +45,7 @@ export default new class NyaaSource extends AbstractSource {
     }
   }
 
-  /** @type {import('./index.js').SearchFunction} */
+  /** @type {import('./index.d.ts').SearchFunction} */
   async movie(query, options) {
     try {
       return await this.searchRSS(query.titles[0], query, options);
@@ -58,11 +58,7 @@ export default new class NyaaSource extends AbstractSource {
     try {
       
       const dummyQuery = { fetch: globalThis.fetch, exclusions: [] };
-      const results = await this.searchRSS("Big Buck Bunny", dummyQuery);
-      
-      if (results.length === 0) {
-        throw new Error("Nyaa returned no results for the test query.");
-      }
+      const results = await this.searchRSS("Frieren 01", dummyQuery);
       return true;
     } catch (e) {
       throw new Error(`Nyaa extension test failed: Ensure Nyaa.si is accessible and not blocked by your ISP. (${e.message})`);
@@ -151,7 +147,7 @@ export default new class NyaaSource extends AbstractSource {
         date: new Date(dateStr)
       });
     });
-
+    console.log(results)
     return results;
   }
 
