@@ -177,7 +177,7 @@ export default new class NyaaSource extends AbstractSource {
   removeDuplicates(results) {
     var out = []
     results.forEach(r => {
-      if (out.some(r.hash))
+      if (out.some(o=>o.hash===r.hash))
         return;
       out.push(r)
     })
