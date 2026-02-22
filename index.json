@@ -13,8 +13,8 @@
     ],
     "url":"aHR0cHM6Ly9ueWFhLnNp",
     "icon": "https://nyaa.si/static/favicon.png",
-    "update": "gh:ThePoisoned1/dapo-hayase/",
-    "code": "gh:ThePoisoned1/dapo-hayase/nyaa",
+    "update": "https://raw.githubusercontent.com/ThePoisoned1/dapo-hayase/refs/heads/main/index.json",
+    "code": "https://raw.githubusercontent.com/ThePoisoned1/dapo-hayase/refs/heads/main/nyaa.js",
     "options": {
       "searchDepth": {
         "type": "number",
