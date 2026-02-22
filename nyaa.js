@@ -26,7 +26,7 @@ export default new class NyaaSource extends AbstractSource {
         const titles = this.getQueriesPerTitle(query, query.titles[i])
         console.log(titles)
         for (let j = 0; j < titles.length; j++) {
-          const srch = array[j];
+          const srch = titles[j];
           console.log(srch)
           results = results.concat(await this.searchRSS(srch, query, options)); 
         }
