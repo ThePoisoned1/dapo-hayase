@@ -22,13 +22,13 @@ export default new class NyaaSource extends AbstractSource {
     try {
       let results = []
       console.log(query)
-      for (let i = 0; i < Math.min(query.titles.length, 2); i++) {
+      for (let i = 0; i < Math.min(query.titles.length, options.searchDepth || 2); i++) {
         const titles = this.getQueriesPerTitle(query, query.titles[i])
         console.log(titles)
-        for (let j = 0; j < titles.length; j++) {
+        for (let j = 0; j < Math.min(titles.length, options.parsedTitles || 2); j++) {
           const srch = titles[j];
           console.log(srch)
-          results = results.concat(await this.searchRSS(srch, query, options)); 
+          results = results.concat(await this.searchRSS(srch, query, options));
         }
       }
       results = this.removeDuplicates(results)
@@ -177,7 +177,7 @@ export default new class NyaaSource extends AbstractSource {
   removeDuplicates(results) {
     var out = []
     results.forEach(r => {
-      if (out.some(o=>o.hash===r.hash))
+      if (out.some(o => o.hash === r.hash))
         return;
       out.push(r)
     })
@@ -197,8 +197,8 @@ export default new class NyaaSource extends AbstractSource {
     }
     const formattedSeason = String(season).padStart(2, '0');
     const formattedEp = String(ep).padStart(2, '0');
-    if(season>1)
-      series = words.slice(0,words.length-1).join(" ")
+    if (season > 1)
+      series = words.slice(0, words.length - 1).join(" ")
     return `${series} S${formattedSeason}E${formattedEp}`;
   }
   getQueriesPerTitle(query, title) {
@@ -214,7 +214,7 @@ export default new class NyaaSource extends AbstractSource {
       aux += res
     }
     queries.push(aux)
-    queries.push(this.getSeasonFormatedEp(title, query.episode)+res)
+    queries.push(this.getSeasonFormatedEp(title, query.episode) + res)
     if (query.absoluteEpisodeNumber && query.absoluteEpisodeNumber > query.episode)
       queries.push(title + ` ${query.absoluteEpisodeNumber.toString().padStart(2, '0')}` + res)
     console.log(queries)

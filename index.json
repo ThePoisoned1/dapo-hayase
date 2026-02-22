@@ -16,6 +16,16 @@
     "update": "https://raw.githubusercontent.com/ThePoisoned1/dapo-hayase/refs/heads/main/index.json",
     "code": "https://raw.githubusercontent.com/ThePoisoned1/dapo-hayase/refs/heads/main/nyaa.js",
     "options": {
+      "searchDepth": {
+        "type": "number",
+        "description": "Depth of the title searches",
+        "default": 2
+      },
+      "parsedTitles": {
+        "type": "number",
+        "description": "number of queries extracted for each title (1-3)",
+        "default": 2
+      }
     }
   }
 ]
