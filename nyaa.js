@@ -56,7 +56,7 @@ export default new class NyaaSource extends AbstractSource {
 
   async test() {
     try {
-      // Pass a dummy query object with the global fetch just for testing the connection
+      
       const dummyQuery = { fetch: globalThis.fetch, exclusions: [] };
       const results = await this.searchRSS("Big Buck Bunny", dummyQuery);
       
@@ -65,7 +65,6 @@ export default new class NyaaSource extends AbstractSource {
       }
       return true;
     } catch (e) {
-      // Hayase requires an error to be thrown here with a friendly message
       throw new Error(`Nyaa extension test failed: Ensure Nyaa.si is accessible and not blocked by your ISP. (${e.message})`);
     }
   }
@@ -77,8 +76,6 @@ export default new class NyaaSource extends AbstractSource {
     const encodedQuery = encodeURIComponent(queryStr);
     const targetUrl = `${this.BASE_URL}&q=${encodedQuery}&c=1_2&f=0`;
 
-    // Use Hayase's injected fetch to bypass CORS automatically!
-    // Fallback to global fetch if it's missing (e.g., during local isolated testing)
     const fetcher = queryObj.fetch || globalThis.fetch;
 
     const response = await fetcher(targetUrl, {
@@ -99,7 +96,6 @@ export default new class NyaaSource extends AbstractSource {
 
   parseXml(text, exclusions) {
     const results = [];
-    // Convert exclusions to lowercase once for faster checking
     const lowerExclusions = exclusions.map(ex => ex.toLowerCase());
 
     const getTag = (xmlString, tagName) => {
@@ -125,10 +121,10 @@ export default new class NyaaSource extends AbstractSource {
     items.forEach(itemXml => {
       const title = getTag(itemXml, 'title');
       
-      // BEST PRACTICE: Filter out user exclusions (e.g., "x265", "dub")
+      //Filter out user exclusions (e.g., "x265", "dub")
       const lowerTitle = title.toLowerCase();
       const hasExclusion = lowerExclusions.some(ex => lowerTitle.includes(ex));
-      if (hasExclusion) return; // Skip this iteration, don't add to results
+      if (hasExclusion) return;
 
       const link = getTag(itemXml, 'link');
       const seeders = parseInt(getTag(itemXml, 'nyaa:seeders'), 10) || 0;
