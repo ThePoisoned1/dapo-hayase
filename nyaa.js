@@ -209,10 +209,10 @@ export default new class NyaaSource extends AbstractSource {
       aux += res
     }
     queries.push(aux)
-    aux = ""
     queries.push(this.getSeasonFormatedEp(title, query.episode))
     if (query.absoluteEpisodeNumber && query.absoluteEpisodeNumber > query.episode)
       queries.push(title + ` ${query.absoluteEpisodeNumber.toString().padStart(2, '0')}` + res)
+    console.log(queries)
     return queries;
   }
 }();
