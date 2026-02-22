@@ -20,23 +20,19 @@ export default new class NyaaSource extends AbstractSource {
   /** @type {import('./index.d.ts').SearchFunction} */
   async single(query, options) {
     try {
-      let searchTerm;
       let results = []
       console.log(query)
-      for (let i = 0; i < Math.min(query.titles.length,2); i++) {
-        searchTerm = query.titles[i]
-        if (query.episode) {
-          const ep = query.episode.toString().padStart(2, '0');
-          searchTerm += ` ${ep}`;
+      for (let i = 0; i < Math.min(query.titles.length, 2); i++) {
+        for (const srch in this.getQueriesPerTitle(quert, query.titles[i])) {
+          console.log(srch)
+          results = results.concat(await this.searchRSS(srch, query, options));
         }
-        if (query.resolution) {
-          searchTerm += ` ${query.resolution}p`;
-        }
-        console.log(searchTerm)
-        results = results.concat(await this.searchRSS(searchTerm, query, options));
+
       }
       results = this.removeDuplicates(results)
       results = this.sortResultsByGroup(results)
+      console.log(results)
+      return results;
     } catch (e) {
       throw new Error(`Nyaa single search failed: ${e.message}`);
     }
@@ -63,7 +59,7 @@ export default new class NyaaSource extends AbstractSource {
 
   async test() {
     try {
-      
+
       const dummyQuery = { fetch: globalThis.fetch, exclusions: [] };
       const results = await this.searchRSS("Frieren 01", dummyQuery);
       return true;
@@ -105,12 +101,12 @@ export default new class NyaaSource extends AbstractSource {
       const regex = new RegExp(`<${tagName}(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/${tagName}>`, 'i');
       const match = xmlString.match(regex);
       if (!match) return '';
-      
+
       let content = match[1].trim();
       if (content.startsWith('<![CDATA[') && content.endsWith(']]>')) {
         content = content.substring(9, content.length - 3).trim();
       }
-      
+
       return content
         .replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<')
@@ -123,7 +119,7 @@ export default new class NyaaSource extends AbstractSource {
 
     items.forEach(itemXml => {
       const title = getTag(itemXml, 'title');
-      
+
       //Filter out user exclusions (e.g., "x265", "dub")
       const lowerTitle = title.toLowerCase();
       const hasExclusion = lowerExclusions.some(ex => lowerTitle.includes(ex));
@@ -133,7 +129,7 @@ export default new class NyaaSource extends AbstractSource {
       const seeders = parseInt(getTag(itemXml, 'nyaa:seeders'), 10) || 0;
       const leechers = parseInt(getTag(itemXml, 'nyaa:leechers'), 10) || 0;
       const downloads = parseInt(getTag(itemXml, 'nyaa:downloads'), 10) || 0;
-      const sizeTag = getTag(itemXml, 'nyaa:size'); 
+      const sizeTag = getTag(itemXml, 'nyaa:size');
       const dateStr = getTag(itemXml, 'pubDate');
       const infoHash = getTag(itemXml, 'nyaa:infoHash');
 
@@ -175,13 +171,48 @@ export default new class NyaaSource extends AbstractSource {
     });
   }
 
-  removeDuplicates(results){
+  removeDuplicates(results) {
     var out = []
-    results.forEach(r=>{
-        if(out.some(r.hash))
-          return;
-        out.push(r)
+    results.forEach(r => {
+      if (out.some(r.hash))
+        return;
+      out.push(r)
     })
     return out;
+  }
+  getSeasonFormatedEp(series, ep) {
+    let season = 1;
+    const words = series.trim().split(/\s+/);
+
+    if (words.length > 0) {
+      const lastWord = words.pop();
+      // Regex to match "2", "02", "S2", "s02", etc.
+      const match = lastWord.match(/^s?(\d+)$/i);
+      if (match) {
+        season = parseInt(match[1], 10);
+      }
+    }
+    const formattedSeason = String(season).padStart(2, '0');
+    const formattedEp = String(ep).padStart(2, '0');
+    return `S${formattedSeason}E${formattedEp}`;
+  }
+  getQueriesPerTitle(query, title) {
+    if (!query.episode)
+      return title
+    let queries = []
+    let aux = title
+    const ep = query.episode.toString().padStart(2, '0');
+    aux += ` ${ep}`;
+    let res = ""
+    if (query.resolution) {
+      res = ` ${query.resolution}p`;
+      aux += res
+    }
+    queries.push(aux)
+    aux = ""
+    queries.push(this.getSeasonFormatedEp(title, query.episode))
+    if (query.absoluteEpisodeNumber && query.absoluteEpisodeNumber > query.episode)
+      queries.push(title + ` ${query.absoluteEpisodeNumber.toString().padStart(2, '0')}` + res)
+    return queries;
   }
 }();

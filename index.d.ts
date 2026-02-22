@@ -45,6 +45,7 @@ export interface TorrentQuery {
   titles: string[] // list of titles and alternative titles
   episode?: number
   episodeCount?: number // total episode count for the series
+  absoluteEpisodeNumber?: number
   resolution: '2160' | '1080' | '720' | '540' | '480' | ''
   exclusions: string[] // list of keywords to exclude from searches
   type?: 'sub' | 'dub',
