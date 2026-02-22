@@ -21,10 +21,8 @@ export default new class NyaaSource extends AbstractSource {
   async single(query, options) {
     try {
       let results = []
-      console.log(query)
       for (let i = 0; i < Math.min(query.titles.length, options.searchDepth || 2); i++) {
         const titles = this.getQueriesPerTitle(query, query.titles[i])
-        console.log(titles)
         for (let j = 0; j < Math.min(titles.length, options.parsedTitles || 2); j++) {
           const srch = titles[j];
           console.log(srch)
@@ -33,7 +31,7 @@ export default new class NyaaSource extends AbstractSource {
       }
       results = this.removeDuplicates(results)
       results = this.sortResultsByGroup(results)
-      console.log(results)
+      console.log("found: "+results.length)
       return results;
     } catch (e) {
       console.log(e)
@@ -223,7 +221,6 @@ export default new class NyaaSource extends AbstractSource {
     queries.push(this.getSeasonFormatedEp(title, query.episode) + res)
     if (query.absoluteEpisodeNumber && query.absoluteEpisodeNumber > query.episode)
       queries.push(title + ` ${query.absoluteEpisodeNumber.toString().padStart(2, '0')}` + res)
-    console.log(queries)
     return queries;
   }
 }();
