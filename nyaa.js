@@ -36,6 +36,7 @@ export default new class NyaaSource extends AbstractSource {
       console.log(results)
       return results;
     } catch (e) {
+      console.log(e)
       throw new Error(`Nyaa single search failed: ${e.message}`);
     }
   }
