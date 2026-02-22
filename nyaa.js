@@ -198,7 +198,7 @@ export default new class NyaaSource extends AbstractSource {
     const formattedSeason = String(season).padStart(2, '0');
     const formattedEp = String(ep).padStart(2, '0');
     if (season > 1)
-      series = words.slice(0, words.length - 1).join(" ")
+      series = words.slice(0, words.length).join(" ")
     return `${series} S${formattedSeason}E${formattedEp}`;
   }
   getQueriesPerTitle(query, title) {
